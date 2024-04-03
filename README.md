@@ -6,12 +6,15 @@ The file system, which mimics FAT12, hooks access into the `WIFI.TXT` file for r
 ## Build
 
 ```
-git clone https://github.com/raspberrypi/pico-sdk.git --branch master
+git submodule update --init
 cd pico-sdk; git submodule update --init; cd ..
-mkdir build
-cd build
+mkdir build; cd build
 cmake ..
 make
 ```
 
 Now you have `msc_wifi_setting.uf2` and can drag and drop it onto your Raspberry Pi Pico to install and run it.
+
+## Reference
+
+The MSC and FAT12 implementations were based on tinyusb's [example](https://github.com/hathach/tinyusb/tree/master/examples/device/cdc_msc).
