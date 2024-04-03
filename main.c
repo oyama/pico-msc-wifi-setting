@@ -1,11 +1,8 @@
+#include <bsp/board.h>
+#include <pico/cyw43_arch.h>
+#include <pico/stdlib.h>
 #include <stdlib.h>
 #include <string.h>
-#include <stdlib.h>
-
-#include <pico/stdlib.h>
-#include <pico/cyw43_arch.h>
-
-#include <bsp/board.h>
 #include <tusb.h>
 
 #include "wifi_setting.h"
@@ -24,7 +21,9 @@ void wifi_task(void) {
             wifisetting_write(&wifi_setting);
         }
         printf("Wi-Fi connect: %s\n", wifi_setting.ssid);
-        int rc = cyw43_arch_wifi_connect_async(wifi_setting.ssid, wifi_setting.password, CYW43_AUTH_WPA2_AES_PSK);
+        int rc = cyw43_arch_wifi_connect_async(wifi_setting.ssid,
+                                               wifi_setting.password,
+                                               CYW43_AUTH_WPA2_AES_PSK);
         if (rc != PICO_OK) {
             printf("wifi_connect_async fail rc=%d\n", rc);
         }

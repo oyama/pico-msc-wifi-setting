@@ -1,6 +1,7 @@
 #include <ctype.h>
-#include "bsp/board.h"
-#include "tusb.h"
+#include <bsp/board.h>
+#include <tusb.h>
+
 #include "wifi_setting.h"
 
 
@@ -201,9 +202,7 @@ int32_t tud_msc_read10_cb(uint8_t lun, uint32_t lba, uint32_t offset, void* buff
     } else if (cid + 1 == lba) {
         wifi_setting_t wifi_setting;
         wifisetting_read(&wifi_setting);
-        sprintf(msc_disk[lba], "ssid=%s\npassword=%s\n",
-                wifi_setting.ssid,
-                wifi_setting.password);
+        wifisetting_encode(msc_disk[lba], &wifi_setting);
     }
 
     uint8_t const *addr = msc_disk[lba] + offset;
@@ -240,12 +239,9 @@ int32_t tud_msc_write10_cb(uint8_t lun, uint32_t lba, uint32_t offset, uint8_t* 
             fat_dir_entry_t *e = &entry[i];
             if (strncmp(SETTING_FILENAME, e->DIR_Name, strlen(SETTING_FILENAME)) == 0 && e->DIR_FileSize > 0) {
                 printf("update WIFI.TXT metadata, cluster=%u\n", e->DIR_FstClusLO + DISK_FAT_NUM);
-
                 uint8_t *data = msc_disk[e->DIR_FstClusLO + DISK_FAT_NUM];
                 wifi_setting_t wifi_setting;
-                sscanf(data, "ssid=%32[^\n]\npassword=%63[^\n]\n",
-                       wifi_setting.ssid,
-                       wifi_setting.password);
+                wifisetting_parse(&wifi_setting, data, e->DIR_FileSize);
                 wifisetting_write(&wifi_setting);
             }
         }
